@@ -15,7 +15,7 @@
 			<div class="card-body">
 				@Html.Raw(ViewData["message"])
 				<div class="col-lg-6">
-					<form method="post" action="/Articles/Create">
+					<form method="post" action="/Articles/Edit">
 						<div class="form-group">
 							<label for="CategoryID">Category ID:</label>
 							<select name="CategoryID" class="form-control">
@@ -56,7 +56,7 @@
 						</div>
 
 						<button type="submit" class="btn btn-success btn-sm">
-							<i class="icon fa fa-plus-circle"></i> Create
+							<i class="icon fa fa-plus-pen"></i> Edit
 						</button>
 					</form>
 				</div>

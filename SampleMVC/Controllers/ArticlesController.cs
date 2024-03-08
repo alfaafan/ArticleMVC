@@ -103,16 +103,42 @@ namespace SampleMVC.Controllers
 
 		// POST: ArticlesController/Edit/5
 		[HttpPost]
-		public ActionResult Edit(int id, IFormCollection collection)
+		public ActionResult Edit(int id, ArticleUpdateDTO article, IFormFile ImageArticle)
 		{
 			try
 			{
-				return RedirectToAction(nameof(Index));
+				if (ImageArticle != null)
+				{
+					if (!Helper.IsImageFile(ImageArticle.FileName))
+					{
+						TempData["message"] = @"<div class='alert alert-danger'><strong>Error!</strong> File is not an image !</div>";
+						return RedirectToAction("Index");
+					}
+					string fileName = $"{Guid.NewGuid()}_{ImageArticle.FileName}" + Path.GetExtension(ImageArticle.FileName);
+					string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Pics", fileName);
+
+					using (var fileStream = new FileStream(filePath, FileMode.Create))
+					{
+						ImageArticle.CopyTo(fileStream);
+					}
+
+					article.Pic = fileName;
+
+
+				}
+
+				article.ArticleID = id;
+
+				_articleBLL.Update(article);
+
+				TempData["message"] = @"<div class='alert alert-success'><strong>Success!</strong> Add Article Success !</div>";
 			}
-			catch
+			catch (Exception ex)
 			{
-				return View();
+				TempData["message"] = @"<div class='alert alert-danger'><strong>Error!</strong> " + ex.Message + "</div>";
 			}
+
+			return RedirectToAction("Index");
 		}
 
 		// GET: ArticlesController/Delete/5

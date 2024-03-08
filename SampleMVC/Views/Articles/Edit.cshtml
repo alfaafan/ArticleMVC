@@ -15,7 +15,7 @@
 			<div class="card-body">
 				@Html.Raw(ViewData["message"])
 				<div class="col-lg-6">
-					<form method="post" action="/Articles/Edit">
+					<form method="post" action="/Articles/Edit" enctype="multipart/form-data">
 						<div class="form-group">
 							<label for="ArticleID">Article ID:</label>
 							<input type="text" class="form-control" name="ArticleID"
@@ -49,10 +49,14 @@
 								   placeholder="Insert Details" value="@Model.Details" />
 						</div>
 						<div class="form-group form-inline">
-							<input type="checkbox" asp-for="IsApproved" class="form-control me-5" value="@Model.IsApproved" />
+							<input type="checkbox" asp-for="IsApproved" class="form-control me-5" checked="@Model.IsApproved" />
 							&nbsp;
 							&nbsp;
-							<label for="IsApproved">Is Approved</label>
+							<label for="IsApproved">Approved</label>
+						</div>
+						<div class="form-group">
+							<label for="ImageArticle">Picture:</label>
+							<input type="file" class="form-control" name="ImageArticle" />
 						</div>
 
 						<button type="submit" class="btn btn-success btn-sm">

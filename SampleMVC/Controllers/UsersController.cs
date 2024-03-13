@@ -20,6 +20,16 @@ namespace SampleMVC.Controllers
 		}
 		public IActionResult Index()
 		{
+			if (HttpContext.Session.GetString("User") == null)
+			{
+				return RedirectToAction("Login");
+			}
+
+			if (!HttpContext.Session.GetString("Roles").ToString().Contains("admin"))
+			{
+				return RedirectToAction("Index", "Home");
+			}
+
 			var users = _userBLL.GetAll();
 			var listUsers = new SelectList(users, "Username", "Username");
 			ViewBag.Users = listUsers;

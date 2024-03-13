@@ -12,6 +12,8 @@ namespace MyWebFormApp.DAL
 		private string GetConnectionString()
 		{
 			return Helper.GetConnectionString();
+			//return @"Data Source=ACTUAL;Initial Catalog=LatihanDb;Integrated Security=True;TrustServerCertificate=True";
+			//return ConfigurationManager.ConnectionStrings["MyDbConnectionString"].ConnectionString;
 		}
 
 		public void ChangePassword(string username, string newPassword)
@@ -122,7 +124,7 @@ namespace MyWebFormApp.DAL
 				foreach (var user in users)
 				{
 					strSql = @"select r.* from UsersRoles ur
-                               inner join Roles r on ur.RoleId = r.Id
+                               inner join Roles r on ur.RoleId = r.RoleId
                                where ur.Username = @Username";
 					var param = new { Username = user.Username };
 					var roles = conn.Query<Role>(strSql, param);
@@ -142,8 +144,8 @@ namespace MyWebFormApp.DAL
 
 				if (user != null)
 				{
-					strSql = @"select r.* from UserRoles ur
-                               inner join Roles r on ur.RoleId = r.Id
+					strSql = @"select r.* from UsersRoles ur
+                               inner join Roles r on ur.RoleId = r.RoleId
                                where ur.Username = @Username";
 					var paramRole = new { Username = user.Username };
 					var roles = conn.Query<Role>(strSql, paramRole);

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MyWebFormApp.BLL;
 using MyWebFormApp.BLL.DTOs;
 using MyWebFormApp.BLL.Interfaces;
@@ -11,13 +12,42 @@ namespace SampleMVC.Controllers
 	public class UsersController : Controller
 	{
 		private readonly IUserBLL _userBLL;
-		public UsersController()
+		private readonly IRoleBLL _roleBLL;
+		public UsersController(IUserBLL userBLL, IRoleBLL roleBLL)
 		{
-			_userBLL = new UserBLL();
+			_userBLL = userBLL;
+			_roleBLL = roleBLL;
 		}
 		public IActionResult Index()
 		{
-			return View();
+			var users = _userBLL.GetAll();
+			var listUsers = new SelectList(users, "Username", "Username");
+			ViewBag.Users = listUsers;
+
+			var roles = _roleBLL.GetAllRoles();
+			var listRoles = new SelectList(roles, "RoleID", "RoleName");
+			ViewBag.Roles = listRoles;
+
+
+			var usersWithRoles = _userBLL.GetAllWithRoles();
+
+
+			return View(usersWithRoles);
+		}
+
+		[HttpPost]
+		public IActionResult Index(string Username, int RoleID)
+		{
+			try
+			{
+				_roleBLL.AddUserToRole(Username, RoleID);
+				return RedirectToAction("Index");
+			}
+			catch (Exception e)
+			{
+				ViewBag.Message = "<div class=\"alert alert-danger\" role=\"alert\">" + e.Message + "</div>";
+				return View();
+			}
 		}
 
 		public IActionResult Register()
@@ -98,6 +128,12 @@ namespace SampleMVC.Controllers
 		{
 			HttpContext.Session.Clear();
 			return RedirectToAction("Login");
+		}
+
+		public IActionResult Edit(string username)
+		{
+			var user = _userBLL.GetByUsername(username);
+			return View(user);
 		}
 	}
 }

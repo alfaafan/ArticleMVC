@@ -69,13 +69,19 @@
 						<span>Admin</span>
 					</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/Users">
+						<i class="fas fa-fw fa-user"></i>
+						<span>Roles</span>
+					</a>
+				</li>
 			}
 
 			@if (roles.Contains("contributor"))
 			{
 				<li class="nav-item">
 					<a class="nav-link" href="/Article">
-						<i class="fas fa-fw fa-tachometer-alt"></i>
+						<i class="fas fa-fw fa-pen"></i>
 						<span>Contribute</span>
 					</a>
 				</li>
@@ -83,13 +89,13 @@
 			{
 				<li class="nav-item">
 					<a class="nav-link" href="/Articles">
-						<i class="fas fa-fw fa-tachometer-alt"></i>
+						<i class="fas fa-fw fa-newspaper"></i>
 						<span>Read Articles</span>
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/Categories">
-						<i class="fas fa-fw fa-tachometer-alt"></i>
+						<i class="fas fa-fw fa-folder-open"></i>
 						<span>Categories</span>
 					</a>
 				</li>

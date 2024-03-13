@@ -7,15 +7,8 @@
 		Context.Response.Redirect("/Users/Login");
 	}
 
-
 	var user = JsonSerializer.Deserialize<UserDTO>(Context.Session.GetString("User"));
-	StringBuilder roles = new StringBuilder();
-	foreach (var role in user.Roles)
-	{
-		roles.Append(role.RoleName + ",");
-	}
-
-
+	var roles = Context.Session.GetString("Roles");
 }
 
 <!DOCTYPE html>
@@ -68,7 +61,7 @@
 				</a>
 			</li>
 
-			@if (roles.ToString().Contains("admin"))
+			@if (roles.Contains("admin"))
 			{
 				<li class="nav-item">
 					<a class="nav-link" href="index.html">
@@ -78,7 +71,7 @@
 				</li>
 			}
 
-			@if (roles.ToString().Contains("contributor"))
+			@if (roles.Contains("contributor"))
 			{
 				<li class="nav-item">
 					<a class="nav-link" href="/Article">
@@ -94,10 +87,15 @@
 						<span>Read Articles</span>
 					</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/Categories">
+						<i class="fas fa-fw fa-tachometer-alt"></i>
+						<span>Categories</span>
+					</a>
+				</li>
 			}
 
 			<!-- Heading -->
-
 			<!-- Divider -->
 			<hr class="sidebar-divider d-none d-md-block">
 

@@ -14,6 +14,10 @@ public class HomeController : Controller
             var user = JsonSerializer.Deserialize<UserDTO>(HttpContext.Session.GetString("User"));
             ViewBag.Message = $"Welcome {user.FirstName} {user.LastName}!";
 		}
+        else
+        {
+            return RedirectToAction("Login", "Users");
+        }
         return View();
     }
 

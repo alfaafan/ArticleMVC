@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using MyWebFormApp.BLL;
 using MyWebFormApp.BLL.DTOs;
@@ -64,7 +65,16 @@ namespace SampleMVC.Controllers
 				var userLogin = _userBLL.LoginMVC(user);
 				if (userLogin != null)
 				{
+					StringBuilder roles = new StringBuilder();
+					foreach (var role in userLogin.Roles)
+					{
+						roles.Append(role.RoleName + ",");
+					}
+
+					HttpContext.Session.SetString("Roles", roles.ToString());
+
 					ViewBag.Message = @"<div class=""alert alert-success"" role=""alert"">Login success</div>";
+
 					var userDTOSerialized = JsonSerializer.Serialize(userLogin);
 					HttpContext.Session.SetString("User", userDTOSerialized);
 					HttpContext.Session.SetString("Username", userLogin.Username.ToString());

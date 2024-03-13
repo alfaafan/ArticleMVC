@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<MyWebFormApp.BLL.DTOs.ArticleDTO>
 
 @{
+	var roles = Context.Session.GetString("Roles");
 	int pageNumber = 0;
 	if (ViewData["pageNumber"] != null)
 	{
@@ -47,10 +48,14 @@
 					</p>
 				</form>
 
-				<button class="btn btn-success btn-sm mb-4">
-					<i class="icon fa fa-plus-circle"></i>
-					<a asp-action="Create" class="text-decoration-none text-white">Create New Article</a>
-				</button>
+				@if (roles.Contains("contributor"))
+				{
+					<button class="btn btn-success btn-sm mb-4">
+						<i class="icon fa fa-plus-circle"></i>
+						<a asp-action="Create" class="text-decoration-none text-white">Create New Article</a>
+					</button>
+				}
+
 				<table class="table table-striped">
 					<tr>
 						<th>Article ID</th>
@@ -60,8 +65,11 @@
 						<th>Date Published</th>
 						<th>Approved</th>
 						<th>Pic</th>
-						<th>&nbsp;</th>
-						<th>&nbsp;</th>
+						@if (roles.Contains("contributor"))
+						{
+							<th>&nbsp;</th>
+							<th>&nbsp;</th>
+						}
 					</tr>
 					@foreach (var article in Model)
 					{
@@ -78,10 +86,13 @@
 								}
 							</td>
 							<td><img src="/Pics/@article.Pic" width="50" height="50" /></td>
-							<td><a asp-action="Edit" asp-route-id="@article.ArticleID" class="btn btn-warning btn-sm"><i class="icon fa fa-pen"></i> Edit</a></td>
-							<td>
-								<a asp-action="Delete" asp-route-id="@article.ArticleID" onclick="return confirm('Serius mau hapus?')" class="btn btn-danger btn-sm"><i class="icon fa fa-trash"></i> Delete</a>
-							</td>
+							@if (roles.Contains("contributor"))
+							{
+								<td><a asp-action="Edit" asp-route-id="@article.ArticleID" class="btn btn-warning btn-sm"><i class="icon fa fa-pen"></i> Edit</a></td>
+								<td>
+									<a asp-action="Delete" asp-route-id="@article.ArticleID" onclick="return confirm('Serius mau hapus?')" class="btn btn-danger btn-sm"><i class="icon fa fa-trash"></i> Delete</a>
+								</td>
+							}
 						</tr>
 					}
 				</table>

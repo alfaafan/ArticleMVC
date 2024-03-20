@@ -105,17 +105,34 @@ namespace RESTServices.Data
 			}
 		}
 
-		public async Task<Task> InsertArticleWithCategory(Article article)
+		public async Task<Article> InsertArticleWithCategory(Article article)
 		{
-			try
+			using (var transaction = _context.Database.BeginTransaction())
 			{
-				_context.Articles.Add(article);
-				await _context.SaveChangesAsync();
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
+				try
+				{
+					_context.Articles.Add(article);
+					await _context.SaveChangesAsync();
+
+					var category = new Category
+					{
+						CategoryName = article.Category.CategoryName
+					};
+					_context.Categories.Add(category);
+					await _context.SaveChangesAsync();
+					
+					article.CategoryId = category.CategoryId;
+					await _context.SaveChangesAsync();
+
+					await transaction.CommitAsync();
+				}
+				catch (Exception ex)
+				{
+					await transaction.RollbackAsync();
+					throw new Exception(ex.Message);
+				}
+
+				return article;
 			}
 		}
 

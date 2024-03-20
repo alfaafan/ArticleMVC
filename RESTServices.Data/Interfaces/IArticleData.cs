@@ -10,5 +10,5 @@ public interface IArticleData : ICrudData<Article>
 	Task<int> GetCountArticles();
 	Task<int> InsertWithIdentity(Article article);
 
-	Task<Task> InsertArticleWithCategory(Article article);
+	Task<Article> InsertArticleWithCategory(Article article);
 }

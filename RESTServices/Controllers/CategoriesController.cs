@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyWebFormApp.BLL.DTOs;
-using MyWebFormApp.BLL.Interfaces;
+using RESTServices.BLL.DTOs;
+using RESTServices.BLL.Interfaces;
 
 namespace RESTServices.Controllers
 {
@@ -16,16 +16,16 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult GetAll()
+		public async Task<IActionResult> GetAll()
 		{
-			var result = _categoryBLL.GetAll();
+			var result = await _categoryBLL.GetAll();
 			return Ok(result);
 		}
 
 		[HttpGet("{id}")]
-		public IActionResult GetById(int id)
+		public async Task<IActionResult> GetById(int id)
 		{
-			var result = _categoryBLL.GetById(id);
+			var result = await _categoryBLL.GetById(id);
 			if (result == null)
 			{
 				return NotFound();
@@ -34,12 +34,12 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		public IActionResult Delete(int id)
+		public async Task<IActionResult> Delete(int id)
 		{
 			try
 			{
-				_categoryBLL.Delete(id);
-				return Ok("Berhasil delete kategori");
+				var deleted = await _categoryBLL.Delete(id);
+				return Ok(deleted);
 			}
 			catch (System.Exception ex)
 			{
@@ -48,12 +48,12 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Post([FromBody] CategoryCreateDTO categoryDTO)
+		public async Task<IActionResult> Post([FromBody] CategoryCreateDTO categoryDTO)
 		{
 			try
 			{
-				_categoryBLL.Insert(categoryDTO);
-				return Ok("Kategori berhasil dibuat");
+				var category = await _categoryBLL.Insert(categoryDTO);
+				return Ok(category);
 			}
 			catch (System.Exception ex)
 			{
@@ -62,29 +62,28 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public IActionResult Put(int id, [FromBody] CategoryUpdateDTO categoryDTO)
+		public async Task<IActionResult> Put(int id, [FromBody] CategoryUpdateDTO categoryDTO)
 		{
 			try
 			{
-				var category = _categoryBLL.GetById(id);
-				if (category == null)
+				categoryDTO.CategoryID = id;
+				var updatedCategory = await _categoryBLL.Update(categoryDTO);
+				if (updatedCategory == null)
 				{
 					return NotFound();
 				}
-				categoryDTO.CategoryID = id;
-				_categoryBLL.Update(categoryDTO);
-				return Ok("Berasil update kategori");
+				return Ok(updatedCategory);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return BadRequest(ex.Message);
 			}
 		}
 
 		[HttpGet("GetByName/{name}")]
-		public IActionResult GetByName(string name)
+		public async Task<IActionResult> GetByName(string name)
 		{
-			var result = _categoryBLL.GetByName(name);
+			var result = await _categoryBLL.GetByName(name);
 			if (result == null)
 			{
 				return NotFound();

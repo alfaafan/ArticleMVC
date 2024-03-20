@@ -16,7 +16,7 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult GetAll()
+		public async Task<IActionResult> GetAll()
 		{
 			var result = _articleBLL.GetArticleWithCategory();
 
@@ -34,7 +34,7 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpGet("{id}")]
-		public IActionResult GetById(int id)
+		public async Task<IActionResult> GetById(int id)
 		{
 			var result = _articleBLL.GetArticleById(id);
 
@@ -47,7 +47,7 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		public IActionResult Delete(int id)
+		public async Task<IActionResult> Delete(int id)
 		{
 			try
 			{
@@ -61,7 +61,7 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Post([FromBody] ArticleCreateDTO articleDTO)
+		public async Task<IActionResult> Post([FromBody] ArticleCreateDTO articleDTO)
 		{
 			try
 			{
@@ -75,7 +75,7 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public IActionResult Put(int id, [FromBody] ArticleUpdateDTO articleDTO)
+		public async Task<IActionResult> Put(int id, [FromBody] ArticleUpdateDTO articleDTO)
 		{
 			try
 			{
@@ -96,7 +96,7 @@ namespace RESTServices.Controllers
 		}
 
 		[HttpGet("GetArticleByCategory/{id}")]
-		public IActionResult GetArticleByCategory(int id)
+		public async Task<IActionResult> GetArticleByCategory(int id)
 		{
 			var result = _articleBLL.GetArticleByCategory(id);
 

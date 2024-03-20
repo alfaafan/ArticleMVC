@@ -15,10 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 //register DI
 builder.Services.AddScoped<ICategoryBLL, CategoryBLL>();
 builder.Services.AddScoped<ICategoryData, CategoryData>();
+builder.Services.AddScoped<IArticleBLL, ArticleBLL>();
+builder.Services.AddScoped<IArticleData, ArticleData>();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LatihanDbConnectionString")));
 
 
-//builder.Services.AddScoped<IArticleBLL, ArticleBLL>();
 //builder.Services.AddScoped<IRoleBLL, RoleBLL>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

@@ -17,8 +17,8 @@ namespace RESTServices.BLL.Profiles
 			CreateMap<CategoryCreateDTO, Category>();
 			CreateMap<CategoryUpdateDTO, Category>();
 			CreateMap<Article, ArticleDTO>().ReverseMap();
-			CreateMap<ArticleCreateDTO, Article>();
-			CreateMap<ArticleUpdateDTO, Article>();
+			CreateMap<ArticleCreateDTO, Article>().ReverseMap();
+			CreateMap<ArticleUpdateDTO, Article>().ReverseMap();
 			CreateMap<Role, RoleDTO>().ReverseMap();
 			CreateMap<RoleCreateDTO, Role>();
 			CreateMap<LoginDTO, User>();

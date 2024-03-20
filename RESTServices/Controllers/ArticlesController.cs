@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyWebFormApp.BLL.DTOs;
-using MyWebFormApp.BLL.Interfaces;
+using RESTServices.BLL.DTOs;
+using RESTServices.BLL.Interfaces;
 
 namespace RESTServices.Controllers
 {
@@ -18,7 +18,7 @@ namespace RESTServices.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
-			var result = _articleBLL.GetArticleWithCategory();
+			var result = await _articleBLL.GetArticleWithCategory();
 
 			if (result == null)
 			{
@@ -36,7 +36,7 @@ namespace RESTServices.Controllers
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetById(int id)
 		{
-			var result = _articleBLL.GetArticleById(id);
+			var result = await _articleBLL.GetArticleById(id);
 
 			if (result == null)
 			{
@@ -51,7 +51,7 @@ namespace RESTServices.Controllers
 		{
 			try
 			{
-				_articleBLL.Delete(id);
+				await _articleBLL.Delete(id);
 				return Ok("Berhasil delete artikel");
 			}
 			catch (System.Exception ex)
@@ -65,7 +65,7 @@ namespace RESTServices.Controllers
 		{
 			try
 			{
-				_articleBLL.Insert(articleDTO);
+				await _articleBLL.Insert(articleDTO);
 				return Ok("Artikel berhasil dibuat");
 			}
 			catch (System.Exception ex)
@@ -79,14 +79,14 @@ namespace RESTServices.Controllers
 		{
 			try
 			{
-				var article = _articleBLL.GetArticleById(id);
+				var article = await _articleBLL.GetArticleById(id);
 				if (article == null)
 				{
 					return NotFound();
 				}
 
 				articleDTO.ArticleID = id;
-				_articleBLL.Update(articleDTO);
+				await _articleBLL.Update(articleDTO);
 				return Ok("Artikel berhasil diupdate");
 			}
 			catch (System.Exception ex)
@@ -98,16 +98,11 @@ namespace RESTServices.Controllers
 		[HttpGet("GetArticleByCategory/{id}")]
 		public async Task<IActionResult> GetArticleByCategory(int id)
 		{
-			var result = _articleBLL.GetArticleByCategory(id);
+			var result = await _articleBLL.GetArticleByCategory(id);
 
 			if (result == null)
 			{
 				return NotFound();
-			}
-
-			if (result.Count() == 0)
-			{
-				return NoContent();
 			}
 
 			return Ok(result);

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RESTServices.BLL.DTOs;
 using RESTServices.BLL.Interfaces;
+using RESTServices.Helpers;
 
 namespace RESTServices.Controllers
 {
@@ -10,9 +12,13 @@ namespace RESTServices.Controllers
 	public class ArticlesController : ControllerBase
 	{
 		private readonly IArticleBLL _articleBLL;
-		public ArticlesController(IArticleBLL articleBLL)
+		private readonly IValidator<ArticleCreateDTO> _articleCreateValidator;
+		private readonly IValidator<ArticleUpdateDTO> _articleUpdateValidator;
+		public ArticlesController(IArticleBLL articleBLL, IValidator<ArticleUpdateDTO> articleUpdateValidator, IValidator<ArticleCreateDTO> articleCreateValidator)
 		{
 			_articleBLL = articleBLL;
+			_articleUpdateValidator = articleUpdateValidator;
+			_articleCreateValidator = articleCreateValidator;
 		}
 
 		[HttpGet]
@@ -65,8 +71,14 @@ namespace RESTServices.Controllers
 		{
 			try
 			{
-				await _articleBLL.Insert(articleDTO);
-				return Ok("Artikel berhasil dibuat");
+				var validationResult = await _articleCreateValidator.ValidateAsync(articleDTO);
+				if (!validationResult.IsValid)
+				{
+					Helper.AddToModelState(validationResult, ModelState);
+					return BadRequest(ModelState);
+				}
+				var newArticle = await _articleBLL.Insert(articleDTO);
+				return CreatedAtAction(nameof(Get), new { id = newArticle.ArticleID }, newArticle);
 			}
 			catch (System.Exception ex)
 			{
@@ -79,6 +91,12 @@ namespace RESTServices.Controllers
 		{
 			try
 			{
+				var validationResult = await _articleUpdateValidator.ValidateAsync(articleDTO);
+				if (!validationResult.IsValid)
+				{
+					Helper.AddToModelState(validationResult, ModelState);
+					return BadRequest(ModelState);
+				}
 				var article = await _articleBLL.GetArticleById(id);
 				if (article == null)
 				{
@@ -86,7 +104,7 @@ namespace RESTServices.Controllers
 				}
 
 				articleDTO.ArticleID = id;
-				await _articleBLL.Update(articleDTO);
+				var updatedArticle = await _articleBLL.Update(articleDTO);
 				return Ok("Artikel berhasil diupdate");
 			}
 			catch (System.Exception ex)

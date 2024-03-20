@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 
-namespace RESTServices.BLL.DTOs
+namespace RESTServices.BLL.DTOs.Validators
 {
-	public class CategoryUpdateValidator : AbstractValidator<CategoryUpdateDTO>
+	public class CategoryCreateValidator : AbstractValidator<CategoryCreateDTO>
 	{
-		public CategoryUpdateValidator()
+		public CategoryCreateValidator()
 		{
 			RuleFor(c => c.CategoryName).NotEmpty().WithMessage("Name is required");
 			RuleFor(c => c.CategoryName).MaximumLength(50).WithMessage("Name can't be longer than 50 characters");

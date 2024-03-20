@@ -1,12 +1,12 @@
 using FluentValidation;
 using RESTServices.BLL;
-using RESTServices.BLL.DTOs;
 using RESTServices.BLL.Interfaces;
 using RESTServices.Data.Interfaces;
 using RESTServices.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
+using RESTServices.BLL.DTOs.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 

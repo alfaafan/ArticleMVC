@@ -18,7 +18,7 @@ public class CategoriesController : Controller
 		_categoryService = categoryService;
 	}
 
-	public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5, string name = "")
+	public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5, string name = "", string act = "")
 	{
 		ViewData["Title"] = "Category List";
 		if (TempData["message"] != null)
@@ -27,6 +27,30 @@ public class CategoriesController : Controller
 		}
 
 		ViewData["name"] = name;
+		
+		var maxsize = await _categoryService.GetCountCategories(name);
+
+		if (act == "next")
+		{
+			if (pageNumber * pageSize < maxsize)
+			{
+				pageNumber += 1;
+			}
+			ViewData["pageNumber"] = pageNumber;
+		}
+		else if (act == "prev")
+		{
+			if (pageNumber > 1)
+			{
+				pageNumber -= 1;
+			}
+			ViewData["pageNumber"] = pageNumber;
+		}
+
+		ViewData["pageNumber"] = pageNumber;
+
+		ViewData["pageSize"] = pageSize;
+
 		var models = await _categoryService.GetWithPaging(pageNumber, pageSize, name);
 		List<Category> categoryList = new List<Category>();
 		foreach (var category in models)
@@ -37,15 +61,6 @@ public class CategoriesController : Controller
 				CategoryName = category.CategoryName
 			});
 		}
-		var maxsize = await _categoryService.GetCountCategories(name);
-
-		if (pageNumber * pageSize < maxsize)
-		{
-			pageNumber += 1;
-		}
-		ViewData["pageNumber"] = pageNumber;
-
-		ViewData["pageSize"] = pageSize;
 
 		return View(categoryList);
 	}
@@ -62,14 +77,14 @@ public class CategoriesController : Controller
 	//	var models = _categoryBLL.GetWithPaging(pageNumber, pageSize, search);
 	//	var maxsize = _categoryBLL.GetCountCategories(search);
 
-	//	if (act == "next")
-	//	{
-	//		if (pageNumber * pageSize < maxsize)
-	//		{
-	//			pageNumber += 1;
-	//		}
-	//		ViewData["pageNumber"] = pageNumber;
-	//	}
+//		if (act == "next")
+//		{
+//			if (pageNumber* pageSize < maxsize)
+//			{
+//				pageNumber += 1;
+//			}
+//ViewData["pageNumber"] = pageNumber;
+//		}
 	//	else if (act == "prev")
 	//	{
 	//		if (pageNumber > 1)
@@ -141,7 +156,7 @@ public class CategoriesController : Controller
 			ViewData["message"] = $"<div class='alert alert-danger'><strong>Error!</strong>{ex.Message}</div>";
 			return View(categoryCreate);
 		}
-		return RedirectToAction("GetFromService");
+		return RedirectToAction("Index");
 	}
 
 	public async Task<IActionResult> Edit(int id)

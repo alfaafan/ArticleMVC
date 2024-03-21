@@ -40,7 +40,7 @@
 				<form asp-action="Index" method="get" class="form-inline">
 					<p>
 						<input type="text" id="search" class="form-control" name="search" value="@ViewData["search"]"
-							   placeholder="search article title" />
+							placeholder="search article title" />
 						&nbsp;
 						<button type="submit" class="btn btn-primary btn-sm">
 							<i class="icon fa fa-search"></i> Search
@@ -88,9 +88,12 @@
 							<td><img src="/Pics/@article.Pic" width="50" height="50" /></td>
 							@if (roles.Contains("contributor"))
 							{
-								<td><a asp-action="Edit" asp-route-id="@article.ArticleID" class="btn btn-warning btn-sm"><i class="icon fa fa-pen"></i> Edit</a></td>
+								<td><a asp-action="Edit" asp-route-id="@article.ArticleID" class="btn btn-warning btn-sm"><i
+											class="icon fa fa-pen"></i> Edit</a></td>
 								<td>
-									<a asp-action="Delete" asp-route-id="@article.ArticleID" onclick="return confirm('Serius mau hapus?')" class="btn btn-danger btn-sm"><i class="icon fa fa-trash"></i> Delete</a>
+									<a asp-action="Delete" asp-route-id="@article.ArticleID"
+										onclick="return confirm('Serius mau hapus?')" class="btn btn-danger btn-sm"><i
+											class="icon fa fa-trash"></i> Delete</a>
 								</td>
 							}
 						</tr>

@@ -27,4 +27,8 @@
 		<ProjectReference Include="..\RESTServices.BLL\RESTServices.BLL.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
+
 </Project>

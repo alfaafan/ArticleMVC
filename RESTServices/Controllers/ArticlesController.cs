@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RESTServices.BLL.DTOs;
 using RESTServices.BLL.Interfaces;
 using RESTServices.Helpers;
+using RESTServices.Models;
 
 namespace RESTServices.Controllers
 {
@@ -78,11 +79,45 @@ namespace RESTServices.Controllers
 					return BadRequest(ModelState);
 				}
 				var newArticle = await _articleBLL.Insert(articleDTO);
-				return CreatedAtAction(nameof(Get), new { id = newArticle.ArticleID }, newArticle);
+				return CreatedAtAction(nameof(GetById), new { id = newArticle.ArticleID }, newArticle);
 			}
 			catch (System.Exception ex)
 			{
 				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpPost("upload")]
+		public async Task<IActionResult> Post([FromForm] ArticleWithFile articleWithFile)
+		{
+			try
+			{
+				if (articleWithFile.Pic == null || articleWithFile.Pic.Length == 0)
+				{
+					return BadRequest("File is required");
+				}
+
+				var newName = Guid.NewGuid() + Path.GetExtension(articleWithFile.Pic.FileName);
+				var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", newName);
+				using (var stream = new FileStream(path, FileMode.Create))
+				{
+					await articleWithFile.Pic.CopyToAsync(stream);
+				}
+
+				var articleDTO = new ArticleCreateDTO
+				{
+					CategoryID = articleWithFile.CategoryId,
+					Title = articleWithFile.Title,
+					Details = articleWithFile.Details,
+					IsApproved = articleWithFile.IsApproved,
+					Pic = newName
+				};
+				var article = await _articleBLL.Insert(articleDTO);
+				return CreatedAtAction(nameof(GetById), new { id = article.ArticleID }, article);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest($"Error: {ex.Message}");
 			}
 		}
 

@@ -16,6 +16,4 @@ namespace RESTServices.BLL.DTOs.Validators
 			RuleFor(a => a.Title).MaximumLength(100).WithMessage("Title can't be longer than 100 characters");
 		}
 	}
-	{
-	}
 }

@@ -1,16 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyWebFormApp.BLL.DTOs;
+//using MyWebFormApp.BLL.DTOs;
 using MyWebFormApp.BLL.Interfaces;
+using RESTServices.BLL.DTOs;
+using SampleMVC.Models;
+using SampleMVC.Services.Interfaces;
 
 namespace SampleMVC.Controllers;
 
 public class CategoriesController : Controller
 {
 	private readonly ICategoryBLL _categoryBLL;
+	private readonly ICategoryService _categoryService;
 
-	public CategoriesController(ICategoryBLL categoryBLL)
+	public CategoriesController(ICategoryBLL categoryBLL, ICategoryService categoryService)
 	{
 		_categoryBLL = categoryBLL;
+		_categoryService = categoryService;
 	}
 
 	public IActionResult Index(int pageNumber = 1, int pageSize = 5, string search = "", string act = "")
@@ -53,12 +58,36 @@ public class CategoriesController : Controller
 		return View(models);
 	}
 
-
-	public IActionResult Detail(int id)
+	public async Task<IActionResult> GetFromService()
 	{
-		var model = _categoryBLL.GetById(id);
-		ViewData["Title"] = model.CategoryName;
-		return View(model);
+		if (TempData["message"] != null)
+		{
+			ViewData["message"] = TempData["message"];
+		}
+		var categories = await _categoryService.GetAll();
+		List<Category> categoryList = new List<Category>();
+		foreach (var category in categories)
+		{
+			categoryList.Add(new Category
+			{
+				CategoryID = category.CategoryID,
+				CategoryName = category.CategoryName
+			});
+		}
+		return View(categoryList);
+	}
+
+
+	public async Task<IActionResult> Detail(int id)
+	{
+		var category = await _categoryService.GetById(id);
+		if (category == null)
+		{
+			TempData["message"] = @"<div class='alert alert-danger'><strong>Error!</strong>Category Not Found !</div>";
+			return RedirectToAction("GetFromService");
+		}
+		ViewData["Title"] = $"{category.CategoryName} | Detail Category";
+		return View(category);
 	}
 
 	public IActionResult Create()
@@ -68,76 +97,76 @@ public class CategoriesController : Controller
 	}
 
 	[HttpPost]
-	public IActionResult Create(CategoryCreateDTO categoryCreate)
+	public async Task<IActionResult> Create(CategoryCreateDTO categoryCreate)
 	{
 		try
 		{
-			_categoryBLL.Insert(categoryCreate);
-			TempData["message"] = @"<div class='alert alert-success'><strong>Success!</strong>Add Data Category Success !</div>";
+			await _categoryService.Insert(categoryCreate);
+			TempData["message"] = @"<div class='alert alert-success'><strong>Success!</strong>Add New Category Success !</div>";
+		}
+		catch (Exception ex)
+		{
+			ViewData["message"] = $"<div class='alert alert-danger'><strong>Error!</strong>{ex.Message}</div>";
+			return View(categoryCreate);
+		}
+		return RedirectToAction("GetFromService");
+	}
+
+	public async Task<IActionResult> Edit(int id)
+	{
+		var category = await _categoryService.GetById(id);
+		if (category == null)
+		{
+			TempData["message"] = @"<div class='alert alert-danger'><strong>Error!</strong>Category Not Found !</div>";
+			return RedirectToAction("GetFromService");
+		}
+		ViewData["Title"] = $"{category.CategoryName} | Edit Category";
+		return View(category);
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> Edit(int id, CategoryUpdateDTO categoryEdit)
+	{
+		try
+		{
+			await _categoryService.Update(categoryEdit);
+			TempData["message"] = @"<div class='alert alert-success'><strong>Success!</strong>Edit Data Category Success !</div>";
 		}
 		catch (Exception ex)
 		{
 			TempData["message"] = $"<div class='alert alert-danger'><strong>Error!</strong>{ex.Message}</div>";
 		}
-		return RedirectToAction("Index");
+		return RedirectToAction("GetFromService");
 	}
 
-	public IActionResult Edit(int id)
+
+
+	public async Task<IActionResult> Delete(int id)
 	{
-		var model = _categoryBLL.GetById(id);
-		if (model == null)
+		var category = await _categoryService.GetById(id);
+		if (category == null
+					)
 		{
 			TempData["message"] = @"<div class='alert alert-danger'><strong>Error!</strong>Category Not Found !</div>";
-			return RedirectToAction("Index");
+			return RedirectToAction("GetFromService");
 		}
-		ViewData["Title"] = $"{model.CategoryName} | Edit Category";
-		return View(model);
+		ViewData["Title"] = $"{category.CategoryName} | Delete Category";
+		return View(category);
 	}
 
 	[HttpPost]
-	public IActionResult Edit(int id, CategoryUpdateDTO categoryEdit)
+	public async Task<IActionResult> Delete(int id, Category category)
 	{
 		try
 		{
-			_categoryBLL.Update(categoryEdit);
-			TempData["message"] = @"<div class='alert alert-success'><strong>Success!</strong>Edit Data Category Success !</div>";
-		}
-		catch (Exception ex)
-		{
-			ViewData["message"] = $"<div class='alert alert-danger'><strong>Error!</strong>{ex.Message}</div>";
-			return View(categoryEdit);
-		}
-		return RedirectToAction("Index");
-	}
-
-
-
-	public IActionResult Delete(int id)
-	{
-		var model = _categoryBLL.GetById(id);
-		if (model == null)
-		{
-			TempData["message"] = @"<div class='alert alert-danger'><strong>Error!</strong>Category Not Found !</div>";
-			return RedirectToAction("Index");
-		}
-		ViewData["Title"] = $"{model.CategoryName} | Delete Category";
-		return View(model);
-	}
-
-	[HttpPost]
-	public IActionResult Delete(int id, CategoryDTO category)
-	{
-		try
-		{
-			_categoryBLL.Delete(id);
+			await _categoryService.Delete(id);
 			TempData["message"] = @"<div class='alert alert-success'><strong>Success!</strong>Delete Data Category Success !</div>";
 		}
 		catch (Exception ex)
 		{
 			TempData["message"] = $"<div class='alert alert-danger'><strong>Error!</strong>{ex.Message}</div>";
-			return View(category);
 		}
-		return RedirectToAction("Index");
+		return RedirectToAction("GetFromService");
 	}
 
 	public IActionResult DisplayDropdownList()

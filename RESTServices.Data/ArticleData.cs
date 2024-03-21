@@ -67,7 +67,7 @@ namespace RESTServices.Data
 
 		public async Task<Article> GetById(int id)
 		{
-			var article = await _context.Articles.FindAsync(id);
+			var article = await _context.Articles.Include(x => x.Category).FirstOrDefaultAsync(x => x.ArticleId == id);
 			if (article == null)
 			{
 				throw new Exception("Article not found");
@@ -120,7 +120,7 @@ namespace RESTServices.Data
 					};
 					_context.Categories.Add(category);
 					await _context.SaveChangesAsync();
-					
+
 					article.CategoryId = category.CategoryId;
 					await _context.SaveChangesAsync();
 

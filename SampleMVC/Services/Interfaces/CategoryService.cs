@@ -92,5 +92,29 @@ namespace SampleMVC.Services.Interfaces
 
 			return category;
 		}
+
+		public async Task<IEnumerable<CategoryDTO>> GetWithPaging(int pageNumber, int pageSize, string name = "")
+		{
+			var httpResponse = await _httpClient.GetAsync($"{GetBaseURL()}/GetWithPaging?pageNumber={pageNumber}&pageSize={pageSize}&name={name}");
+			if (!httpResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Cannot retrieve categories");
+			}
+			var content = await httpResponse.Content.ReadAsStringAsync();
+			var categories = JsonSerializer.Deserialize<IEnumerable<CategoryDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+			return categories;
+		}
+
+		public async Task<int> GetCountCategories(string name = "")
+		{
+			var httpResponse = await _httpClient.GetAsync($"{GetBaseURL()}/GetCountCategories?name={name}");
+			if (!httpResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Cannot retrieve categories");
+			}
+			var content = await httpResponse.Content.ReadAsStringAsync();
+			var count = JsonSerializer.Deserialize<int>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+			return count;
+		}
 	}
 }

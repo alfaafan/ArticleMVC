@@ -70,13 +70,13 @@ namespace RESTServices.BLL
 			return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
 		}
 
-		public async Task<int> GetCountCategories(string name)
+		public async Task<int> GetCountCategories(string name = "")
 		{
 			var count = await _categoryData.GetCountCategories(name);
 			return count;
 		}
 
-		public async Task<IEnumerable<CategoryDTO>> GetWithPaging(int pageNumber, int pageSize, string name)
+		public async Task<IEnumerable<CategoryDTO>> GetWithPaging(int pageNumber, int pageSize, string name = "")
 		{
 			var categories = await _categoryData.GetWithPaging(pageNumber, pageSize, name);
 			if (categories == null || categories.Count() == 0)
@@ -112,7 +112,7 @@ namespace RESTServices.BLL
 
 				var result = _mapper.Map<CategoryDTO>(updated);
 
-						return result;
+				return result;
 			}
 			catch (Exception ex)
 			{

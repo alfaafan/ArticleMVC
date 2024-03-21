@@ -33,6 +33,24 @@ namespace RESTServices.Controllers
 			return Ok(result);
 		}
 
+		[HttpGet("GetWithPaging")]
+		public async Task<IActionResult> GetWithPaging(int pageNumber, int pageSize, string name = "")
+		{
+			var result = await _categoryBLL.GetWithPaging(pageNumber, pageSize, name);
+			if (result == null)
+			{
+				return NotFound();
+			}
+			return Ok(result);
+		}
+
+		[HttpGet("GetCountCategories")]
+		public async Task<IActionResult> GetCountCategories(string name = "")
+		{
+			var result = await _categoryBLL.GetCountCategories(name);
+			return Ok(result);
+		}
+
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{

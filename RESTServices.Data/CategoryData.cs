@@ -58,15 +58,15 @@ namespace RESTServices.Data
 			return categories;
 		}
 
-		public async Task<int> GetCountCategories(string name)
+		public async Task<int> GetCountCategories(string name = "")
 		{
-			var count = await _context.Categories.Where(x => x.CategoryName.Contains(name)).CountAsync();
+			var count = await _context.Categories.Where(x => string.IsNullOrEmpty(name) || x.CategoryName.Contains(name)).CountAsync();
 			return count;
 		}
 
-		public async Task<IEnumerable<Category>> GetWithPaging(int pageNumber, int pageSize, string name)
+		public async Task<IEnumerable<Category>> GetWithPaging(int pageNumber, int pageSize, string name = "")
 		{
-			var categories = await _context.Categories.Where(x => x.CategoryName.Contains(name)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+			var categories = await _context.Categories.Where(x => string.IsNullOrEmpty(name) || x.CategoryName.Contains(name)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 			if (categories == null)
 			{
 				throw new Exception("No categories found");

@@ -18,7 +18,7 @@ public class CategoriesController : Controller
 		_categoryService = categoryService;
 	}
 
-	public IActionResult Index(int pageNumber = 1, int pageSize = 5, string search = "", string act = "")
+	public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5, string name = "")
 	{
 		ViewData["Title"] = "Category List";
 		if (TempData["message"] != null)
@@ -26,37 +26,69 @@ public class CategoriesController : Controller
 			ViewData["message"] = TempData["message"];
 		}
 
-		ViewData["search"] = search;
-		var models = _categoryBLL.GetWithPaging(pageNumber, pageSize, search);
-		var maxsize = _categoryBLL.GetCountCategories(search);
+		ViewData["name"] = name;
+		var models = await _categoryService.GetWithPaging(pageNumber, pageSize, name);
+		List<Category> categoryList = new List<Category>();
+		foreach (var category in models)
+		{
+			categoryList.Add(new Category
+			{
+				CategoryID = category.CategoryID,
+				CategoryName = category.CategoryName
+			});
+		}
+		var maxsize = await _categoryService.GetCountCategories(name);
 
-		if (act == "next")
+		if (pageNumber * pageSize < maxsize)
 		{
-			if (pageNumber * pageSize < maxsize)
-			{
-				pageNumber += 1;
-			}
-			ViewData["pageNumber"] = pageNumber;
+			pageNumber += 1;
 		}
-		else if (act == "prev")
-		{
-			if (pageNumber > 1)
-			{
-				pageNumber -= 1;
-			}
-			ViewData["pageNumber"] = pageNumber;
-		}
-		else
-		{
-			ViewData["pageNumber"] = 2;
-		}
+		ViewData["pageNumber"] = pageNumber;
 
 		ViewData["pageSize"] = pageSize;
-		//ViewData["action"] = action;
 
-
-		return View(models);
+		return View(categoryList);
 	}
+
+	//public IActionResult Index(int pageNumber = 1, int pageSize = 5, string search = "", string act = "")
+	//{
+	//	ViewData["Title"] = "Category List";
+	//	if (TempData["message"] != null)
+	//	{
+	//		ViewData["message"] = TempData["message"];
+	//	}
+
+	//	ViewData["search"] = search;
+	//	var models = _categoryBLL.GetWithPaging(pageNumber, pageSize, search);
+	//	var maxsize = _categoryBLL.GetCountCategories(search);
+
+	//	if (act == "next")
+	//	{
+	//		if (pageNumber * pageSize < maxsize)
+	//		{
+	//			pageNumber += 1;
+	//		}
+	//		ViewData["pageNumber"] = pageNumber;
+	//	}
+	//	else if (act == "prev")
+	//	{
+	//		if (pageNumber > 1)
+	//		{
+	//			pageNumber -= 1;
+	//		}
+	//		ViewData["pageNumber"] = pageNumber;
+	//	}
+	//	else
+	//	{
+	//		ViewData["pageNumber"] = 2;
+	//	}
+
+	//	ViewData["pageSize"] = pageSize;
+	//	//ViewData["action"] = action;
+
+
+	//	return View(models);
+	//}
 
 	public async Task<IActionResult> GetFromService()
 	{

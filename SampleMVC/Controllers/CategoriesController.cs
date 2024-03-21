@@ -27,7 +27,7 @@ public class CategoriesController : Controller
 		}
 
 		ViewData["name"] = name;
-		
+
 		var maxsize = await _categoryService.GetCountCategories(name);
 
 		if (act == "next")
@@ -47,6 +47,21 @@ public class CategoriesController : Controller
 			ViewData["pageNumber"] = pageNumber;
 		}
 
+		if (act == "first")
+		{
+			pageNumber = 1;
+			ViewData["pageNumber"] = pageNumber;
+		}
+		else if (act == "last")
+		{
+			pageNumber = maxsize / pageSize;
+			if (maxsize % pageSize > 0)
+			{
+				pageNumber += 1;
+			}
+			ViewData["pageNumber"] = pageNumber;
+		}
+
 		ViewData["pageNumber"] = pageNumber;
 
 		ViewData["pageSize"] = pageSize;
@@ -60,6 +75,11 @@ public class CategoriesController : Controller
 				CategoryID = category.CategoryID,
 				CategoryName = category.CategoryName
 			});
+		}
+
+		if (categoryList.Count <= pageSize)
+		{
+			ViewData["pageNumber"] = 1;
 		}
 
 		return View(categoryList);
@@ -77,14 +97,14 @@ public class CategoriesController : Controller
 	//	var models = _categoryBLL.GetWithPaging(pageNumber, pageSize, search);
 	//	var maxsize = _categoryBLL.GetCountCategories(search);
 
-//		if (act == "next")
-//		{
-//			if (pageNumber* pageSize < maxsize)
-//			{
-//				pageNumber += 1;
-//			}
-//ViewData["pageNumber"] = pageNumber;
-//		}
+	//		if (act == "next")
+	//		{
+	//			if (pageNumber* pageSize < maxsize)
+	//			{
+	//				pageNumber += 1;
+	//			}
+	//ViewData["pageNumber"] = pageNumber;
+	//		}
 	//	else if (act == "prev")
 	//	{
 	//		if (pageNumber > 1)

@@ -24,7 +24,7 @@
 
 				<form asp-action="Index" method="get" class="form-inline">
 					<p>
-						<input type="text" id="search" class="form-control" name="search" value="@ViewData["search"]"
+						<input type="text" id="search" class="form-control" name="name" value="@ViewData["name"]"
 							   placeholder="search category name" />
 						&nbsp;
 						<input type="submit" class="btn btn-primary btn-sm" value="Search" />
@@ -64,10 +64,10 @@
 					}
 				</table>
 
-				<a class="btn btn-outline-info btn-sm">First</a>&nbsp;
-				<a href="/Categories/Index?act=prev&pageNumber=@pageNumber" class="btn btn-outline-info btn-sm">Prev</a>&nbsp;
-				<a href="/Categories/Index?act=next&pageNumber=@pageNumber" class="btn btn-outline-info btn-sm">Next</a>&nbsp;
-				<a class="btn btn-outline-info btn-sm">Last</a>
+				<a class="btn btn-outline-info btn-sm" href="/Categories/Index?act=first&name=@ViewData["name"]">First</a>&nbsp;
+				<a href="/Categories/Index?act=prev&pageNumber=@pageNumber&name=@ViewData["name"]" class="btn btn-outline-info btn-sm">Prev</a>&nbsp;
+				<a href="/Categories/Index?act=next&pageNumber=@pageNumber&name=@ViewData["name"]" class="btn btn-outline-info btn-sm">Next</a>&nbsp;
+				<a class="btn btn-outline-info btn-sm" href="/Categories/Index?act=last&name=@ViewData["name"]">Last</a>
 
 			</div>
 		</div>

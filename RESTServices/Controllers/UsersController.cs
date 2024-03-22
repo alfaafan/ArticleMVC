@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -17,13 +18,16 @@ namespace RESTServices.Controllers
 	public class UsersController : ControllerBase
 	{
 		private readonly IUserBLL _userBLL;
+		private readonly IRoleBLL _roleBLL;
 		private readonly AppSettings _appSettings;
-		public UsersController(IUserBLL userBLL, IOptions<AppSettings> appSettings)
+		public UsersController(IUserBLL userBLL, IOptions<AppSettings> appSettings, IRoleBLL roleBLL)
 		{
 			_userBLL = userBLL;
 			_appSettings = appSettings.Value;
+			_roleBLL = roleBLL;
 		}
 
+		[Authorize(Roles = "admin")]
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
@@ -115,12 +119,32 @@ namespace RESTServices.Controllers
 			}
 		}
 
+		[Authorize(Roles = "admin,contributor,reader")]
 		[HttpPut("changePassword")]
 		public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO user)
 		{
 			try
 			{
 				var result = await _userBLL.ChangePassword(user.Username, user.NewPassword);
+				if (result == null)
+				{
+					return BadRequest();
+				}
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[Authorize(Roles = "admin")]
+		[HttpPost("addUserToRole")]
+		public async Task<IActionResult> AddUserToRole([FromBody] UserToRoleDTO userToRole)
+		{
+			try
+			{
+				var result = await _roleBLL.AddUserToRole(userToRole.Username, userToRole.RoleId);
 				if (result == null)
 				{
 					return BadRequest();

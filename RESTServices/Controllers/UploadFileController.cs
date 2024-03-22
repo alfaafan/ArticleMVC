@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace RESTServices.Controllers
@@ -7,6 +8,7 @@ namespace RESTServices.Controllers
 	[ApiController]
 	public class UploadFileController : ControllerBase
 	{
+		[Authorize(Roles = "contributor")]
 		[HttpPost]
 		public async Task<IActionResult> UploadFile(IFormFile file)
 		{

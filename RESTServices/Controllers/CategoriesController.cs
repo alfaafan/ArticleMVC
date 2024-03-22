@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RESTServices.BLL.DTOs;
 using RESTServices.BLL.Interfaces;
 
 namespace RESTServices.Controllers
 {
+	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class CategoriesController : ControllerBase
@@ -51,6 +53,7 @@ namespace RESTServices.Controllers
 			return Ok(result);
 		}
 
+		[Authorize(Roles = "admin")]
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
@@ -65,6 +68,7 @@ namespace RESTServices.Controllers
 			}
 		}
 
+		[Authorize(Roles = "admin,contributor")]
 		[HttpPost]
 		public async Task<IActionResult> Post([FromBody] CategoryCreateDTO categoryDTO)
 		{
@@ -79,6 +83,7 @@ namespace RESTServices.Controllers
 			}
 		}
 
+		[Authorize(Roles = "admin,contributor")]
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Put(int id, [FromBody] CategoryUpdateDTO categoryDTO)
 		{

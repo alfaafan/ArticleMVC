@@ -139,11 +139,11 @@ namespace RESTServices.Data
 			{
 				var hashedPassword = Hasher.Hash(password);
 				var user = await _context.Users.FirstOrDefaultAsync(x => x.Username == username && x.Password == hashedPassword);
-				var userRoles = await _context.Roles.Where(ur => ur.Usernames.Contains(user)).Select(ur => ur.RoleName).ToListAsync();
+				var userRoles = await _context.Roles.Where(ur => ur.Usernames.Contains(user)).ToListAsync();
 				List<Role> roles = new List<Role>();
 				foreach (var role in userRoles)
 				{
-					roles.Add(new Role { RoleName = role });
+					roles.Add(role);
 				}
 				if (user == null)
 				{

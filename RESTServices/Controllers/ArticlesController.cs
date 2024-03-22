@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RESTServices.BLL.DTOs;
@@ -8,6 +9,7 @@ using RESTServices.Models;
 
 namespace RESTServices.Controllers
 {
+	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class ArticlesController : ControllerBase
@@ -53,6 +55,7 @@ namespace RESTServices.Controllers
 			return Ok(result);
 		}
 
+		[Authorize(Roles = "contributor")]
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
@@ -67,6 +70,7 @@ namespace RESTServices.Controllers
 			}
 		}
 
+		[Authorize(Roles = "contributor")]
 		[HttpPost]
 		public async Task<IActionResult> Post([FromBody] ArticleCreateDTO articleDTO)
 		{
@@ -87,6 +91,7 @@ namespace RESTServices.Controllers
 			}
 		}
 
+		[Authorize(Roles = "contributor")]
 		[HttpPost("upload")]
 		public async Task<IActionResult> Post([FromForm] ArticleWithFile articleWithFile)
 		{
@@ -121,6 +126,7 @@ namespace RESTServices.Controllers
 			}
 		}
 
+		[Authorize(Roles = "contributor")]
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Put(int id, [FromBody] ArticleUpdateDTO articleDTO)
 		{

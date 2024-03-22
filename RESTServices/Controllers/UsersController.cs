@@ -1,7 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using RESTServices.BLL.DTOs;
 using RESTServices.BLL.Interfaces;
+using RESTServices.Helpers;
+using RESTServices.ViewModels;
 
 namespace RESTServices.Controllers
 {
@@ -10,9 +17,11 @@ namespace RESTServices.Controllers
 	public class UsersController : ControllerBase
 	{
 		private readonly IUserBLL _userBLL;
-		public UsersController(IUserBLL userBLL)
+		private readonly AppSettings _appSettings;
+		public UsersController(IUserBLL userBLL, IOptions<AppSettings> appSettings)
 		{
 			_userBLL = userBLL;
+			_appSettings = appSettings.Value;
 		}
 
 		[HttpGet]
@@ -72,7 +81,33 @@ namespace RESTServices.Controllers
 				{
 					return BadRequest();
 				}
-				return Ok(result);
+				List<Claim> claims = new List<Claim>();
+				claims.Add(new Claim(ClaimTypes.Name, result.Username));
+				foreach (var role in result.Roles)
+				{
+					claims.Add(new Claim(ClaimTypes.Role, role.RoleName));
+				}
+				var tokenHandler = new JwtSecurityTokenHandler();
+				var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+				var tokenDescriptor = new SecurityTokenDescriptor
+				{
+					Subject = new ClaimsIdentity(claims),
+					Expires = DateTime.UtcNow.AddHours(1),
+					SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+				};
+				var token = tokenHandler.CreateToken(tokenDescriptor);
+				var userWithToken = new UserWithToken
+				{
+					Username = result.Username,
+					FirstName = result.FirstName,
+					LastName = result.LastName,
+					Email = result.Email,
+					Address = result.Address,
+					Telp = result.Telp,
+					Roles = result.Roles,
+					Token = tokenHandler.WriteToken(token)
+				};
+				return Ok(userWithToken);
 			}
 			catch (Exception ex)
 			{

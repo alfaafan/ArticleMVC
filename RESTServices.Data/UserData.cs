@@ -140,6 +140,11 @@ namespace RESTServices.Data
 				var hashedPassword = Hasher.Hash(password);
 				var user = await _context.Users.FirstOrDefaultAsync(x => x.Username == username && x.Password == hashedPassword);
 				var userRoles = await _context.Roles.Where(ur => ur.Usernames.Contains(user)).Select(ur => ur.RoleName).ToListAsync();
+				List<Role> roles = new List<Role>();
+				foreach (var role in userRoles)
+				{
+					roles.Add(new Role { RoleName = role });
+				}
 				if (user == null)
 				{
 					throw new Exception("Invalid username or password");
@@ -148,6 +153,7 @@ namespace RESTServices.Data
 				{
 					throw new Exception("Invalid password");
 				}
+				user.Roles = roles;
 				return user;
 			}
 			catch (Exception ex)

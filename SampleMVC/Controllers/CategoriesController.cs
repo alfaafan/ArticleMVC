@@ -62,12 +62,19 @@ public class CategoriesController : Controller
 			ViewData["pageNumber"] = pageNumber;
 		}
 
+
+
 		ViewData["pageNumber"] = pageNumber;
 
 		ViewData["pageSize"] = pageSize;
 
 		var models = await _categoryService.GetWithPaging(pageNumber, pageSize, name);
 		List<Category> categoryList = new List<Category>();
+		//if (maxsize == 0)
+		//{
+		//	ViewData["pageNumber"] = 1;
+		//	return View(categoryList);
+		//}
 		foreach (var category in models)
 		{
 			categoryList.Add(new Category
@@ -84,46 +91,6 @@ public class CategoriesController : Controller
 
 		return View(categoryList);
 	}
-
-	//public IActionResult Index(int pageNumber = 1, int pageSize = 5, string search = "", string act = "")
-	//{
-	//	ViewData["Title"] = "Category List";
-	//	if (TempData["message"] != null)
-	//	{
-	//		ViewData["message"] = TempData["message"];
-	//	}
-
-	//	ViewData["search"] = search;
-	//	var models = _categoryBLL.GetWithPaging(pageNumber, pageSize, search);
-	//	var maxsize = _categoryBLL.GetCountCategories(search);
-
-	//		if (act == "next")
-	//		{
-	//			if (pageNumber* pageSize < maxsize)
-	//			{
-	//				pageNumber += 1;
-	//			}
-	//ViewData["pageNumber"] = pageNumber;
-	//		}
-	//	else if (act == "prev")
-	//	{
-	//		if (pageNumber > 1)
-	//		{
-	//			pageNumber -= 1;
-	//		}
-	//		ViewData["pageNumber"] = pageNumber;
-	//	}
-	//	else
-	//	{
-	//		ViewData["pageNumber"] = 2;
-	//	}
-
-	//	ViewData["pageSize"] = pageSize;
-	//	//ViewData["action"] = action;
-
-
-	//	return View(models);
-	//}
 
 	public async Task<IActionResult> GetFromService()
 	{
@@ -203,7 +170,7 @@ public class CategoriesController : Controller
 		{
 			TempData["message"] = $"<div class='alert alert-danger'><strong>Error!</strong>{ex.Message}</div>";
 		}
-		return RedirectToAction("GetFromService");
+		return RedirectToAction("Index");
 	}
 
 
@@ -233,7 +200,7 @@ public class CategoriesController : Controller
 		{
 			TempData["message"] = $"<div class='alert alert-danger'><strong>Error!</strong>{ex.Message}</div>";
 		}
-		return RedirectToAction("GetFromService");
+		return RedirectToAction("Index");
 	}
 
 	public IActionResult DisplayDropdownList()

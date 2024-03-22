@@ -95,14 +95,21 @@ namespace SampleMVC.Services.Interfaces
 
 		public async Task<IEnumerable<CategoryDTO>> GetWithPaging(int pageNumber, int pageSize, string name = "")
 		{
-			var httpResponse = await _httpClient.GetAsync($"{GetBaseURL()}/GetWithPaging?pageNumber={pageNumber}&pageSize={pageSize}&name={name}");
-			if (!httpResponse.IsSuccessStatusCode)
+			try
 			{
-				throw new Exception("Cannot retrieve categories");
+				var httpResponse = await _httpClient.GetAsync($"{GetBaseURL()}/GetWithPaging?pageNumber={pageNumber}&pageSize={pageSize}&name={name}");
+				if (!httpResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Cannot retrieve categories");
+				}
+				var content = await httpResponse.Content.ReadAsStringAsync();
+				var categories = JsonSerializer.Deserialize<IEnumerable<CategoryDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+				return categories;
 			}
-			var content = await httpResponse.Content.ReadAsStringAsync();
-			var categories = JsonSerializer.Deserialize<IEnumerable<CategoryDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-			return categories;
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message);
+			}
 		}
 
 		public async Task<int> GetCountCategories(string name = "")

@@ -22,6 +22,8 @@ namespace RESTServices.BLL.Profiles
 			CreateMap<Role, RoleDTO>().ReverseMap();
 			CreateMap<RoleCreateDTO, Role>();
 			CreateMap<LoginDTO, User>();
+			CreateMap<User, UserDTO>().ReverseMap();
+			CreateMap<UserCreateDTO, User>();
 		}
 	}
 }

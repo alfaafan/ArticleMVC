@@ -66,12 +66,23 @@ namespace RESTServices.Data
 
 		public async Task<IEnumerable<Category>> GetWithPaging(int pageNumber, int pageSize, string name = "")
 		{
-			var categories = await _context.Categories.Where(x => string.IsNullOrEmpty(name) || x.CategoryName.Contains(name)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
-			if (categories == null)
+			try
 			{
-				throw new Exception("No categories found");
+				var categories = await _context.Categories.Where(x => string.IsNullOrEmpty(name) || x.CategoryName.Contains(name)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+				if (categories == null)
+				{
+					throw new Exception("No categories found");
+				}
+				if (categories.Count == 0)
+				{
+					return new List<Category>();
+				}
+				return categories;
 			}
-			return categories;
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message);
+			}
 		}
 
 		public async Task<Category> Insert(Category entity)

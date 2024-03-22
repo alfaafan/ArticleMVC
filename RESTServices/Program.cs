@@ -17,6 +17,10 @@ builder.Services.AddScoped<ICategoryBLL, CategoryBLL>();
 builder.Services.AddScoped<ICategoryData, CategoryData>();
 builder.Services.AddScoped<IArticleBLL, ArticleBLL>();
 builder.Services.AddScoped<IArticleData, ArticleData>();
+builder.Services.AddScoped<IUserData, UserData>();
+builder.Services.AddScoped<IUserBLL, UserBLL>();
+builder.Services.AddScoped<IRoleData, RoleData>();
+builder.Services.AddScoped<IRoleBLL, RoleBLL>();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LatihanDbConnectionString")));
 
 
